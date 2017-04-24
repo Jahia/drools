@@ -323,7 +323,7 @@ public final class EclipseJavaCompiler extends AbstractJavaCompiler {
                             try {
                                 Class cls = pClassLoader.loadClass(pClazzName);
                                 if (cls != null) {
-                                    return true;
+                                    return false;
                                 }
                             } catch (ClassNotFoundException e) {
                                 return true;
