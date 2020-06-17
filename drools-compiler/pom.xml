@@ -11,6 +11,7 @@
 
   <artifactId>drools-compiler</artifactId>
   <packaging>bundle</packaging><!-- bundle = jar + OSGi metadata -->
+  <version>6.0.0.Final-jahia1</version>
 
   <name>Drools :: Compiler</name>
 
