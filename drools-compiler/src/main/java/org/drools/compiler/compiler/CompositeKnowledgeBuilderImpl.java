@@ -161,26 +161,6 @@ public class CompositeKnowledgeBuilderImpl implements CompositeKnowledgeBuilder 
             }
         }
 
-        resourcesByType = this.resourcesByType.remove(ResourceType.PKG);
-        if (resourcesByType != null) {
-            for (ResourceDescr resourceDescr : resourcesByType) {
-                try {
-                    pkgBuilder.setAssetFilter(resourceDescr.getFilter());
-                    pkgBuilder.addPackageFromInputStream(resourceDescr.resource);
-                } catch (RuntimeException e) {
-                    if (buildException == null) {
-                        buildException = e;
-                    }
-                } catch (Exception e) {
-                    if (buildException == null) {
-                        buildException = new RuntimeException( e );
-                    }
-                } finally{
-                    pkgBuilder.setAssetFilter(null);
-                }
-            }
-        }
-
         resourcesByType = this.resourcesByType.remove(ResourceType.CHANGE_SET);
         if (resourcesByType != null) {
             for (ResourceDescr resourceDescr : resourcesByType) {
@@ -372,11 +352,11 @@ public class CompositeKnowledgeBuilderImpl implements CompositeKnowledgeBuilder 
                 changeMap = null;
             }
         }
-        
+
         public PackageBuilder.AssetFilter getFilter() {
             return changeMap == null ? null : this.new ChangeSetAssetFilter();
         }
-        
+
         private class ChangeSetAssetFilter implements PackageBuilder.AssetFilter {
             @Override
             public Action accept(String pkgName, String assetName) {
