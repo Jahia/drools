@@ -173,7 +173,7 @@ public class ExtensibleXmlParser extends DefaultHandler {
      *            The reader containing the rule-set.
      *
      * @return The rule-set.
-     * @throws ParserConfigurationException 
+     * @throws ParserConfigurationException
      */
     public Object read(final Reader reader) throws SAXException,
                                            IOException {
@@ -187,7 +187,7 @@ public class ExtensibleXmlParser extends DefaultHandler {
      *            The input-stream containing the rule-set.
      *
      * @return The rule-set.
-     * @throws ParserConfigurationException 
+     * @throws ParserConfigurationException
      */
     public Object read(final InputStream inputStream) throws SAXException,
                                                      IOException {
@@ -201,7 +201,7 @@ public class ExtensibleXmlParser extends DefaultHandler {
      *            The rule-set input-source.
      *
      * @return The rule-set.
-     * @throws ParserConfigurationException 
+     * @throws ParserConfigurationException
      */
     public Object read(final InputSource in) throws SAXException,
                                             IOException {
@@ -223,7 +223,15 @@ public class ExtensibleXmlParser extends DefaultHandler {
                 throw new RuntimeException( "Unable to create new DOM Document",
                                             e );
             }
-            
+            // XXE protection start
+            try {
+                f.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                f.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+
+            } catch (ParserConfigurationException e) {
+                logger.warn("Unable to set parser features due to {}", e.getMessage());
+            }
+            // XXE protection end
             try {
                 this.document = f.newDocumentBuilder().newDocument();
             } catch ( Exception e ) {
@@ -241,7 +249,7 @@ public class ExtensibleXmlParser extends DefaultHandler {
             } catch ( FactoryConfigurationError e) {
                 // obscure JDK1.5 bug where FactoryFinder in the JRE returns a null ClassLoader, so fall back to hard coded xerces.
                 // https://stg.network.org/bugzilla/show_bug.cgi?id=47169
-                // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4633368                
+                // http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4633368
                 try {
                     factory = (SAXParserFactory) Class.forName( "org.apache.xerces.jaxp.SAXParserFactoryImpl" ).newInstance();
                 } catch ( Exception e1 ) {
@@ -252,9 +260,17 @@ public class ExtensibleXmlParser extends DefaultHandler {
                 throw new RuntimeException( "Unable to create new DOM Document",
                                             e );
             }
-            
-            factory.setNamespaceAware( true );
 
+            factory.setNamespaceAware( true );
+            // XXE protection start
+            try {
+                factory.setFeature("http://xml.org/sax/features/external-general-entities", false);
+                factory.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+
+            } catch (ParserConfigurationException e) {
+                logger.warn("Unable to set parser features due to {}", e.getMessage());
+            }
+            // XXE protection end
             final String isValidatingString = System.getProperty( "drools.schema.validating" );
             if ( System.getProperty( "drools.schema.validating" ) != null ) {
                 this.isValidating = Boolean.getBoolean( "drools.schema.validating" );
@@ -368,7 +384,7 @@ public class ExtensibleXmlParser extends DefaultHandler {
                              final String qname,
                              final Attributes attrs) throws SAXException {
         if ( direction == 1 ) {
-            // going down again, so clear 
+            // going down again, so clear
             this.peer = null;
         } else {
             direction = 1;
@@ -391,8 +407,8 @@ public class ExtensibleXmlParser extends DefaultHandler {
                                      localName,
                                      attrs,
                                      this );
-        
-        this.parents.add( node );    
+
+        this.parents.add( node );
     }
 
     /**
@@ -438,7 +454,7 @@ public class ExtensibleXmlParser extends DefaultHandler {
         final Set validParents = handler.getValidParents();
         final Set validPeers = handler.getValidPeers();
         boolean allowNesting = handler.allowNesting();
-        
+
         if ( validParents == null || validPeers == null ) {
             return;
         }
