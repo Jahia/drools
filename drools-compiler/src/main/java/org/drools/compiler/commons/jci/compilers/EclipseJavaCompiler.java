@@ -48,7 +48,7 @@ import org.eclipse.jdt.internal.compiler.problem.DefaultProblemFactory;
  * Eclipse compiler implementation
  */
 public final class EclipseJavaCompiler extends AbstractJavaCompiler {
-    
+
     private String prefix = "";
 
     private final EclipseJavaCompilerSettings defaultSettings;
@@ -65,12 +65,12 @@ public final class EclipseJavaCompiler extends AbstractJavaCompiler {
         defaultSettings = pSettings;
         this.prefix = prefix;
     }
-    
+
     public String getPathName(String fullPath) {
         if ( prefix.length() == 0 ) {
             return fullPath;
         }
-        
+
         if ( fullPath.charAt( 0 )  == '/') {
              return fullPath.substring( prefix.length() + 1 );
         } else {
@@ -88,9 +88,9 @@ public final class EclipseJavaCompiler extends AbstractJavaCompiler {
 
         CompilationUnit( final ResourceReader pReader, final String pSourceFile ) {
             reader = pReader;
-            
+
             clazzName = ClassUtils.convertResourceToClassName( getPathName( pSourceFile ) );
-            
+
             fileName = pSourceFile;
             int dot = clazzName.lastIndexOf('.');
             if (dot > 0) {
@@ -127,6 +127,11 @@ public final class EclipseJavaCompiler extends AbstractJavaCompiler {
 
         public char[][] getPackageName() {
             return packageName;
+        }
+
+        @Override
+        public boolean ignoreOptionalProblems() {
+            return true;
         }
     }
 
@@ -298,7 +303,7 @@ public final class EclipseJavaCompiler extends AbstractJavaCompiler {
                 }
             }
 
-            private NameEnvironmentAnswer createNameEnvironmentAnswer(final String pClazzName, final byte[] clazzBytes) throws ClassFormatException {                
+            private NameEnvironmentAnswer createNameEnvironmentAnswer(final String pClazzName, final byte[] clazzBytes) throws ClassFormatException {
                 final char[] fileName = pClazzName.toCharArray();
                 final ClassFileReader classFileReader = new ClassFileReader(clazzBytes, fileName, true);
                 return new NameEnvironmentAnswer(classFileReader, null);

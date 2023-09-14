@@ -2,93 +2,97 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>org.kie</groupId>
-    <artifactId>kie-parent-with-dependencies</artifactId>
-    <version>6.0.0.Final</version>
-    <!-- relativePath causes out-of-date problems on hudson slaves -->
-    <!--<relativePath>../droolsjbpm-build-bootstrap/pom.xml</relativePath>-->
-  </parent>
-
-  <groupId>org.drools</groupId>
-  <!-- TODO rename to drools once parent pom has been moved -->
-  <artifactId>drools-multiproject</artifactId>
-  <packaging>pom</packaging>
-
-  <name>Drools multiproject</name>
-  <description>
-    Drools Expert is the rule engine and Drools Fusion does complex event processing (CEP).
-  </description>
-
-  <repositories>
-    <!-- Bootstrap repository to locate the parent pom when the parent pom has not been build locally. -->
-    <repository>
-      <id>jboss-public-repository-group</id>
-      <name>JBoss Public Repository Group</name>
-      <url>http://repository.jboss.org/nexus/content/groups/public/</url>
-      <layout>default</layout>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-        <updatePolicy>daily</updatePolicy>
-      </snapshots>
-    </repository>
-  </repositories>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
         <groupId>org.kie</groupId>
-        <artifactId>kie-bom</artifactId>
-        <type>pom</type>
+        <artifactId>kie-parent-with-dependencies</artifactId>
         <version>6.0.0.Final</version>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
+    </parent>
+    <version>6.0.0-Final-jahia1-SNAPSHOT</version>
+    <groupId>org.drools</groupId>
+    <!-- TODO rename to drools once parent pom has been moved -->
+    <artifactId>drools-multiproject</artifactId>
+    <packaging>pom</packaging>
+
+    <name>Drools multiproject</name>
+    <description>
+        Drools Expert is the rule engine and Drools Fusion does complex event processing (CEP).
+    </description>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.kie</groupId>
+                <artifactId>kie-bom</artifactId>
+                <type>pom</type>
+                <version>6.0.0.Final</version>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <distributionManagement>
+        <repository>
+            <id>thirdparty-releases</id>
+            <url>https://devtools.jahia.com/nexus/content/repositories/thirdparty-releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>thirdparty-snapshots</id>
+            <url>https://devtools.jahia.com/nexus/content/repositories/thirdparty-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <scm>
+        <connection>scm:git:git@github.com:Jahia/drools.git</connection>
+        <developerConnection>scm:git:git@github.com:Jahia/drools.git</developerConnection>
+        <url>https://github.com/Jahia/drools</url>
+    </scm>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 
-  <scm>
-    <connection>scm:git:git@github.com:droolsjbpm/drools.git</connection>
-    <developerConnection>scm:git:git@github.com:droolsjbpm/drools.git</developerConnection>
-    <url>https://github.com/droolsjbpm/drools</url>
-  </scm>
+    <modules>
+        <module>drools-core</module>
+        <module>drools-compiler</module>
+    </modules>
 
-  <modules>
-    <module>drools-core</module>
-    <module>drools-reteoo</module>
-    <module>drools-compiler</module>
-    <module>drools-jsr94</module>
-    <module>drools-verifier</module>
-    <module>drools-persistence-jpa</module>
-    <module>drools-templates</module>
-    <module>drools-decisiontables</module>
-    <module>drools-examples</module>
-    <module>drools-scorecards</module>
-    <module>kie-maven-plugin</module>
-    <module>kie-ci</module>
-    <module>drools-examples-api</module>
-    <module>drools-examples-cdi</module>
-    <module>drools-workbench-models</module>
-    <module>knowledge-api-legacy5-adapter</module>
-  </modules>
-
-  <profiles>
-    <profile>
-      <id>fullProfile</id>
-      <activation>
-        <property>
-          <name>full</name>
-        </property>
-      </activation>
-      <modules>
-        <module>drools-distribution</module>
-      </modules>
-    </profile>
-  </profiles>
+    <profiles>
+        <profile>
+            <id>fullProfile</id>
+            <activation>
+                <property>
+                    <name>full</name>
+                </property>
+            </activation>
+            <modules>
+                <module>drools-reteoo</module>
+                <module>drools-jsr94</module>
+                <module>drools-verifier</module>
+                <module>drools-persistence-jpa</module>
+                <module>drools-templates</module>
+                <module>drools-decisiontables</module>
+                <module>drools-examples</module>
+                <module>drools-scorecards</module>
+                <module>kie-maven-plugin</module>
+                <module>kie-ci</module>
+                <module>drools-examples-api</module>
+                <module>drools-examples-cdi</module>
+                <module>drools-workbench-models</module>
+                <module>knowledge-api-legacy5-adapter</module>
+                <module>drools-distribution</module>
+            </modules>
+        </profile>
+    </profiles>
 
 </project>
