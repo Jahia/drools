@@ -24,4 +24,4 @@ jobs:
           java-version: '8'
           cache: 'maven'
       - name: Build with Maven
-        run: mvn -q -ntp -B package --file pom.xml -DskipTests
+        run: mvn -s ./github/maven.settings.xml -q -ntp -B package --file pom.xml -DskipTests
