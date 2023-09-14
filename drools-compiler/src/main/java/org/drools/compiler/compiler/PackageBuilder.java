@@ -21,7 +21,6 @@ import static org.drools.core.util.BitMaskUtil.isSet;
 import java.beans.IntrospectionException;
 import java.io.Externalizable;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Reader;
 import java.io.Serializable;
 import java.io.StringReader;
@@ -91,7 +90,6 @@ import org.drools.core.base.mvel.MVELCompileable;
 import org.drools.core.builder.conf.impl.JaxbConfigurationImpl;
 import org.drools.core.common.InternalRuleBase;
 import org.drools.core.common.ProjectClassLoader;
-import org.drools.core.definitions.impl.KnowledgePackageImp;
 import org.drools.core.factmodel.AnnotationDefinition;
 import org.drools.core.factmodel.ClassBuilder;
 import org.drools.core.factmodel.ClassDefinition;
@@ -123,7 +121,6 @@ import org.drools.core.type.DateFormats;
 import org.drools.core.type.DateFormatsImpl;
 import org.drools.core.util.ClassUtils;
 import org.drools.core.util.DeepCloneable;
-import org.drools.core.util.DroolsStreamUtils;
 import org.drools.core.util.HierarchySorter;
 import org.drools.core.util.StringUtils;
 import org.drools.core.util.asm.ClassFieldInspector;
@@ -147,7 +144,6 @@ import org.kie.internal.builder.KnowledgeBuilderResults;
 import org.kie.internal.builder.ResultSeverity;
 import org.kie.internal.builder.ScoreCardConfiguration;
 import org.kie.internal.builder.conf.PropertySpecificOption;
-import org.kie.internal.definition.KnowledgePackage;
 import org.xml.sax.SAXException;
 
 /**
@@ -732,8 +728,6 @@ public class PackageBuilder
                 addProcessFromXml(resource);
             } else if (ResourceType.DTABLE.equals(type)) {
                 addPackageFromDecisionTable(resource, configuration);
-            } else if (ResourceType.PKG.equals(type)) {
-                addPackageFromInputStream(resource);
             } else if (ResourceType.CHANGE_SET.equals(type)) {
                 addPackageFromChangeSet(resource);
             } else if (ResourceType.XSD.equals(type)) {
@@ -860,82 +854,6 @@ public class PackageBuilder
                 resourceReader.close();
             }
         }
-    }
-
-    void addPackageFromInputStream(final Resource resource) throws IOException,
-            ClassNotFoundException {
-        InputStream is = resource.getInputStream();
-        Object object = DroolsStreamUtils.streamIn(is, this.configuration.getClassLoader());
-        is.close();
-        if (object instanceof Collection) {
-            // KnowledgeBuilder API
-            @SuppressWarnings("unchecked")
-            Collection<KnowledgePackage> pkgs = (Collection<KnowledgePackage>) object;
-            for (KnowledgePackage kpkg : pkgs) {
-                overrideReSource(((KnowledgePackageImp) kpkg).pkg, resource);
-                addPackage(((KnowledgePackageImp) kpkg).pkg);
-            }
-        } else if (object instanceof KnowledgePackageImp) {
-            // KnowledgeBuilder API
-            KnowledgePackageImp kpkg = (KnowledgePackageImp) object;
-            overrideReSource(kpkg.pkg, resource);
-            addPackage(kpkg.pkg);
-        } else if (object instanceof Package) {
-            // Old Drools 4 API
-            Package pkg = (Package) object;
-            overrideReSource(pkg, resource);
-            addPackage(pkg);
-        } else if (object instanceof Package[]) {
-            // Old Drools 4 API
-            Package[] pkgs = (Package[]) object;
-            for (Package pkg : pkgs) {
-                overrideReSource(pkg, resource);
-                addPackage(pkg);
-            }
-        } else {
-            results.add(new DroolsError(resource) {
-
-                @Override
-                public String getMessage() {
-                    return "Unknown binary format trying to load resource " + resource.toString();
-                }
-
-                @Override
-                public int[] getLines() {
-                    return new int[0];
-                }
-            });
-        }
-    }
-
-    private void overrideReSource(Package pkg,
-            Resource res) {
-        for (Rule r : pkg.getRules()) {
-            if (isSwappable(r.getResource(), res)) {
-                r.setResource(res);
-            }
-        }
-        for (TypeDeclaration d : pkg.getTypeDeclarations().values()) {
-            if (isSwappable(d.getResource(), res)) {
-                d.setResource(res);
-            }
-        }
-        for (Function f : pkg.getFunctions().values()) {
-            if (isSwappable(f.getResource(), res)) {
-                f.setResource(res);
-            }
-        }
-        for (Process p : pkg.getRuleFlows().values()) {
-            if (isSwappable(p.getResource(), res)) {
-                p.setResource(res);
-            }
-        }
-    }
-
-    private boolean isSwappable(Resource original,
-            Resource source) {
-        return original == null
-                || (original instanceof ReaderResource && ((ReaderResource) original).getReader() == null);
     }
 
     /**
@@ -1111,7 +1029,7 @@ public class PackageBuilder
                     }
                 }
             }
-            
+
             if (needsRemoval) {
                 try {
                     this.ruleBase.lock();
@@ -4114,11 +4032,11 @@ public class PackageBuilder
 
         public Action accept(String pkgName, String assetName);
     }
-    
+
     public AssetFilter getAssetFilter() {
         return assetFilter;
     }
-    
+
     public void setAssetFilter(AssetFilter assetFilter) {
         this.assetFilter = assetFilter;
     }

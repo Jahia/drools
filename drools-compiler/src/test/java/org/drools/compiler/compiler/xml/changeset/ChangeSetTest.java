@@ -64,7 +64,7 @@ public class ChangeSetTest extends CommonTestMethodBase {
                       resource.getResourceType() );
 
         resource =  ( UrlResource ) ((List)changeSet.getResourcesAdded()).get( 1 );
-        
+
         assertEquals( "http://www.domain.com/test.xls",
                       resource.getURL().toString() );
         assertEquals( ResourceType.DTABLE,
@@ -93,40 +93,6 @@ public class ChangeSetTest extends CommonTestMethodBase {
         assertEquals( 2,
                       list.size() );
         assertTrue( list.containsAll( Arrays.asList( new String[]{"rule1", "rule2"} ) ) );
-    }
-
-    @Test
-    public void testBasicAuthentication() throws SAXException,
-                               IOException {
-
-        PackageBuilderConfiguration conf = new PackageBuilderConfiguration();
-        XmlChangeSetReader xmlReader = new XmlChangeSetReader( conf.getSemanticModules() );
-        xmlReader.setClassLoader( ChangeSetTest.class.getClassLoader(), ChangeSetTest.class );
-
-        String str = "";
-        str += "<change-set ";
-        str += "xmlns='http://drools.org/drools-5.0/change-set' ";
-        str += "xmlns:xs='http://www.w3.org/2001/XMLSchema-instance' ";
-        str += "xs:schemaLocation='http://drools.org/drools-5.0/change-set http://anonsvn.jboss.org/repos/labs/labs/jbossrules/trunk/drools-api/src/main/resources/change-set-1.0.0.xsd' >";
-        str += "    <add> ";
-        str += "        <resource source='http://localhost:8081/jboss-brms/org.kie.guvnor.Guvnor/package/defaultPackage/LATEST' type='PKG' basicAuthentication='enabled' username='admin' password='pwd'/>";
-        str += "    </add> ";
-        str += "</change-set>";
-
-        StringReader reader = new StringReader( str );
-        ChangeSet changeSet = xmlReader.read( reader );
-
-        assertEquals( 1,
-                      changeSet.getResourcesAdded().size() );
-        UrlResource resource = ( UrlResource ) ((List)changeSet.getResourcesAdded()).get( 0 );
-        assertNull( resource.getConfiguration() );
-        assertEquals( "http://localhost:8081/jboss-brms/org.kie.guvnor.Guvnor/package/defaultPackage/LATEST",
-                      resource.getURL().toString() );
-        assertEquals( "enabled", resource.getBasicAuthentication() );
-        assertEquals( "admin", resource.getUsername() );
-        assertEquals( "pwd", resource.getPassword() );
-        assertEquals( ResourceType.PKG,
-                      resource.getResourceType() );
     }
 
     @Test(timeout = 10000)
