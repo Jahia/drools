@@ -18,6 +18,12 @@
         Drools Expert is the rule engine and Drools Fusion does complex event processing (CEP).
     </description>
 
+    <scm>
+        <connection>scm:git:git@github.com:Jahia/drools.git</connection>
+        <url>scm:git:git@github.com:Jahia/drools.git</url>
+        <developerConnection>scm:git:git@github.com:Jahia/drools.git</developerConnection>
+    </scm>
+    
     <dependencyManagement>
         <dependencies>
             <dependency>
