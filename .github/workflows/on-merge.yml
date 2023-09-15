@@ -45,5 +45,10 @@ jobs:
           distribution: 'temurin'
           java-version: '8'
           cache: 'maven'
+      - name: Set environment variables from parameters
+        shell: bash
+        run: |
+            echo "NEXUS_USERNAME=${{ secrets.NEXUS_USERNAME }}" >> $GITHUB_ENV
+            echo "NEXUS_PASSWORD=${{ secrets.NEXUS_PASSWORD }}" >> $GITHUB_ENV
       - name: Deploy with Maven
-        run: mvn -s ./.github/maven.settings.xml -ntp -B deploy --file pom.xml -DskipTests
+        run: mvn -s ./.github/maven.settings.xml -ntp -B --file pom.xml -DskipTests deploy
