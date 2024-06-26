@@ -52,15 +52,13 @@ jobs:
 
       - name: Release with Maven
         run: |
-          if [[ ${{ github.event.release.tag_name }} == web* ]] ;
-          then
-            TAG_VERSION=$(echo "${{ github.event.release.tag_name }}") # e.g. 6.0.0.Final-jahia2
-            FINAL_RELEASE_VERSION=$(echo "$TAG_VERSION" | tr '_' '.')
-            REVISION=$(echo $FINAL_RELEASE_VERSION | tr -d 'jahia' | cut -d'-' -f2)
-            NEXT_REVISION=$(expr $REVISION + 1)
-            NEXT_DEVELOPMENT_VERSION="$(echo $FINAL_RELEASE_VERSION | cut -d'-' -f1)-jahia${NEXT_REVISION}"-SNAPSHOT # e.g. 6.0.0.Final-jahia3-SNAPSHOT
-            mvn -B -s .github/maven.settings.xml -DdryRun=false -Dcheckstyle.skip=true -DskipLocalStaging=true -Dfindbugs.skip=true -Dmaven.javadoc.skip=true -Dgpg.skip=true -Dtag=$TAG_VERSION -DreleaseVersion=$FINAL_RELEASE_VERSION -DdevelopmentVersion="$NEXT_DEVELOPMENT_VERSION" -DscmCommentPrefix="[skip ci] [maven-release-plugin]" -Darguments="-Dcheckstyle.skip=true -DskipLocalStaging=true -Dfindbugs.skip=true -Dmaven.javadoc.skip=true -Dgpg.skip=true" release:prepare
-            mvn -B -s .github/maven.settings.xml -DdryRun=false -Dcheckstyle.skip=true -DskipLocalStaging=true -Dfindbugs.skip=true -Dmaven.javadoc.skip=true -Dgpg.skip=true -Darguments="-Dcheckstyle.skip=true -DskipLocalStaging=true -Dfindbugs.skip=true -Dmaven.javadoc.skip=true -Dgpg.skip=true" release:perform
-          else
-            exit 1;
+          TAG_VERSION=$(echo "${{ github.event.release.tag_name }}") # e.g. 6.0.0.Final-jahia2
+          FINAL_RELEASE_VERSION=$(echo "$TAG_VERSION" | tr '_' '.')
+          REVISION=$(echo $FINAL_RELEASE_VERSION | tr -d 'jahia' | cut -d'-' -f2)
+          if [ -z "$REVISION" ]; then
+            REVISION=0
           fi
+          NEXT_REVISION=$(expr $REVISION + 1)
+          NEXT_DEVELOPMENT_VERSION="$(echo $FINAL_RELEASE_VERSION | cut -d'-' -f1)-jahia${NEXT_REVISION}"-SNAPSHOT # e.g. 6.0.0.Final-jahia3-SNAPSHOT
+          mvn -B -s .github/maven.settings.xml -DdryRun=false -Dcheckstyle.skip=true -DskipLocalStaging=true -Dfindbugs.skip=true -Dmaven.javadoc.skip=true -Dgpg.skip=true -Dtag=$TAG_VERSION -DreleaseVersion=$FINAL_RELEASE_VERSION -DdevelopmentVersion="$NEXT_DEVELOPMENT_VERSION" -DscmCommentPrefix="[skip ci] [maven-release-plugin]" -Darguments="-Dcheckstyle.skip=true -DskipLocalStaging=true -Dfindbugs.skip=true -Dmaven.javadoc.skip=true -Dgpg.skip=true" release:prepare
+          mvn -B -s .github/maven.settings.xml -DdryRun=false -Dcheckstyle.skip=true -DskipLocalStaging=true -Dfindbugs.skip=true -Dmaven.javadoc.skip=true -Dgpg.skip=true -Darguments="-Dcheckstyle.skip=true -DskipLocalStaging=true -Dfindbugs.skip=true -Dmaven.javadoc.skip=true -Dgpg.skip=true" release:perform
