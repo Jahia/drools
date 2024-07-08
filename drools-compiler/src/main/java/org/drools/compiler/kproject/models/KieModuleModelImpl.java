@@ -246,17 +246,6 @@ public class KieModuleModelImpl implements KieModuleModel {
             validate(new StreamSource(new ByteArrayInputStream(kModuleString.getBytes())));
         }
 
-        private static void validate(Source source, Source duplicateSource) {
-            try {
-                validate(source, schema);
-            } catch (Exception schemaException) {
-                throw new RuntimeException(
-                        "XSD validation failed against the new schema (" + schemaException.getMessage()
-                                + ").",
-                        schemaException);
-            }
-        }
-
         private static void validate(Source source) {
             try {
                 schema.newValidator().validate(source);
