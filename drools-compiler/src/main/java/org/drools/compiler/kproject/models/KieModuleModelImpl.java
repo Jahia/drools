@@ -248,7 +248,7 @@ public class KieModuleModelImpl implements KieModuleModel {
 
         private static void validate(Source source) {
             try {
-                schema.newValidator().validate(source);
+                validate(source, schema);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
