@@ -11,10 +11,12 @@ import org.kie.api.builder.model.KieBaseModel;
 import org.kie.api.builder.model.KieModuleModel;
 import org.xml.sax.SAXException;
 
+import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,7 +36,7 @@ public class KieModuleModelImpl implements KieModuleModel {
     public static String KMODULE_SPRING_JAR_PATH = "META-INF/kmodule-spring.xml";
 
     private Map<String, KieBaseModel>  kBases  = new HashMap<String, KieBaseModel>();
-    
+
     public KieModuleModelImpl() { }
 
     /* (non-Javadoc)
@@ -43,10 +45,10 @@ public class KieModuleModelImpl implements KieModuleModel {
     public KieBaseModel newKieBaseModel(String name) {
         KieBaseModel kbase = new KieBaseModelImpl(this, name);
         Map<String, KieBaseModel> newMap = new HashMap<String, KieBaseModel>();
-        newMap.putAll( this.kBases );        
+        newMap.putAll( this.kBases );
         newMap.put( kbase.getName(), kbase );
-        setKBases( newMap );   
-        
+        setKBases( newMap );
+
         return kbase;
     }
 
@@ -58,8 +60,8 @@ public class KieModuleModelImpl implements KieModuleModel {
         newMap.putAll( this.kBases );
         newMap.remove( qName );
         setKBases( newMap );
-    }    
-    
+    }
+
     /* (non-Javadoc)
      * @see org.kie.kModule.KieProject#removeKieBaseModel(org.kie.kModule.KieBaseModel)
      */
@@ -69,7 +71,7 @@ public class KieModuleModelImpl implements KieModuleModel {
         KieBaseModel kieBaseModel = newMap.remove( oldQName );
         newMap.put( newQName, kieBaseModel);
         setKBases( newMap );
-    }        
+    }
 
     /* (non-Javadoc)
      * @see org.kie.kModule.KieProject#getKieBaseModels()
@@ -81,7 +83,7 @@ public class KieModuleModelImpl implements KieModuleModel {
     public Map<String, KieBaseModel> getRawKieBaseModels() {
         return kBases;
     }
-    
+
     /* (non-Javadoc)
      * @see org.kie.kModule.KieProject#setKBases(java.util.Map)
      */
@@ -211,13 +213,14 @@ public class KieModuleModelImpl implements KieModuleModel {
     }
 
     private static class KieModuleValidator {
-        private static final Schema schema = loadSchema();
+        private static final Schema schema = loadSchema("org/kie/api/kmodule.xsd");
 
-        private static Schema loadSchema() {
-            SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+        private static Schema loadSchema(String xsd) {
+            SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema",
+                    "com.sun.org.apache.xerces.internal.jaxp.validation.XMLSchemaFactory", ClassLoader.getSystemClassLoader());
             try {
-                URL url = KieModuleModel.class.getClassLoader().getResource("org/kie/api/kmodule.xsd");
-                return factory.newSchema(url);
+                URL url = KieModuleModel.class.getClassLoader().getResource(xsd);
+                return url != null ? factory.newSchema(url) : null;
             } catch (SAXException ex ) {
                 throw new RuntimeException( "Unable to load XSD", ex );
             }
@@ -245,10 +248,17 @@ public class KieModuleModelImpl implements KieModuleModel {
 
         private static void validate(Source source) {
             try {
-                schema.newValidator().validate(source);
+                validate(source, schema);
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
+        }
+
+        private static void validate(Source source, Schema schema) throws SAXException, IOException {
+            Validator validator = schema.newValidator();
+            validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+            validator.validate(source);
         }
     }
 }
