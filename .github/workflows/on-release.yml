@@ -46,12 +46,15 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
-          java-version: 1.8
+          distribution: 'temurin'
+          java-version: '8'
+          cache: 'maven'
 
       - name: Release with Maven
         run: |
+          mvn -version
           TAG_VERSION=$(echo "${{ github.event.release.tag_name }}") # e.g. 6.0.0.Final-jahia2
           FINAL_RELEASE_VERSION=$(echo "$TAG_VERSION" | tr '_' '.')
           REVISION=$(echo $FINAL_RELEASE_VERSION | tr -d 'jahia' | cut -d'-' -f2)
