@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.drools</groupId>
     <artifactId>drools-multiproject</artifactId>
-    <version>6.0.0.Final-jahia2</version>
+    <version>6.0.0.Final-jahia3-SNAPSHOT</version>
   </parent>
 
   <artifactId>drools-compiler</artifactId>
   <packaging>bundle</packaging><!-- bundle = jar + OSGi metadata -->
-  <version>6.0.0.Final-jahia2</version>
+  <version>6.0.0.Final-jahia3-SNAPSHOT</version>
 
   <name>Drools :: Compiler</name>
 
