@@ -7,7 +7,7 @@
         <artifactId>kie-parent-with-dependencies</artifactId>
         <version>6.0.0.Final</version>
     </parent>
-    <version>6.0.0.Final-jahia2-SNAPSHOT</version>
+    <version>6.0.0.Final-jahia2</version>
     <groupId>org.drools</groupId>
     <!-- TODO rename to drools once parent pom has been moved -->
     <artifactId>drools-multiproject</artifactId>
@@ -87,7 +87,8 @@
         <connection>scm:git:git@github.com:Jahia/drools.git</connection>
         <url>scm:git:git@github.com:Jahia/drools.git</url>
         <developerConnection>scm:git:git@github.com:Jahia/drools.git</developerConnection>
-    </scm>
+      <tag>6.0.0.Final-jahia2</tag>
+  </scm>
     
     <build>
         <plugins>
