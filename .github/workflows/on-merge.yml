@@ -30,11 +30,12 @@ jobs:
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
     steps:
       - uses: actions/checkout@v5
+      # No cache input here: the container image ships its own warm ~/.m2, and the cache step
+      # found no path to save and warned on every run.
       - uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '8'
-          cache: 'maven'
 
       - name: Set environment variables from parameters
         shell: bash
